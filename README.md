@@ -1,4 +1,4 @@
-# project3_data_warehouse
+# Project3 Data Warehouse
 This the third project for the udacity nanodegree. This ETL project looks to collect and present user activity information for
 the music streaming app called Sparkify. This is all done in AWS using S3 storage as the source of the log files from the app and loading them into 
 AWS Redshift database.
@@ -56,7 +56,7 @@ python create_tables.py
 python etl.py
 ```
 
-##Database and Schema
+## Database and Schema
 
 
 The database has a staging/landing area. Here the data is copied from the S3 bucket to the redshift database
@@ -152,7 +152,7 @@ user_agent text,
 PRIMARY KEY (songplay_id))
 ```
 
-##Sample queries and analysis
+## Sample queries and analysis
 
 You can access the Redshift cluster via AWS console and go to the [Query editor to run queries](https://docs.aws.amazon.com/redshift/latest/mgmt/query-editor.html).
 In the below sample queries I have used the v1 query editor.
@@ -171,7 +171,7 @@ select user_id, count(songplay_id) from songplays group by user_id order by 2 de
 
 
 
-###Files in Project
+### Files in Project
 
 1. ```create_tables.py``` : this file is responsible for dropping and recreating the tables needed in the Redshift cluster.
 2. ```delete_infra.py``` : this file stops and deletes all the redshift cluster infrastructure.
