@@ -2,22 +2,25 @@ from infra import pretty_redshift_props
 import configparser
 import boto3
 
+"""
+This script deletes your redshift cluster especially if you do not want to do it via the AWS console
+"""
 
 config = configparser.ConfigParser()
 config.read_file(open("dwh.cfg"))
 
-"Get variable from config file"
+"Get variables from config file"
 KEY = config.get("AWS", "KEY")
 SECRET = config.get("AWS", "SECRET")
-DWH_CLUSTER_TYPE = config.get("DWH", "DWH_CLUSTER_TYPE")
-DWH_NUM_NODES = config.get("DWH", "DWH_NUM_NODES")
-DWH_NODE_TYPE = config.get("DWH", "DWH_NODE_TYPE")
-DWH_CLUSTER_IDENTIFIER = config.get("DWH", "DWH_CLUSTER_IDENTIFIER")
-DWH_DB = config.get("CLUSTER", "DB_NAME")
-DWH_DB_USER = config.get("CLUSTER", "DB_USER")
-DWH_DB_PASSWORD = config.get("CLUSTER", "DB_PASSWORD")
-DWH_PORT = config.get("CLUSTER", "DB_PORT")
-DWH_IAM_ROLE_NAME = config.get("DWH", "DWH_IAM_ROLE_NAME")
+DWH_CLUSTER_TYPE = config.get("CLUSTER", "DWH_CLUSTER_TYPE")
+DWH_NUM_NODES = config.get("CLUSTER", "DWH_NUM_NODES")
+DWH_NODE_TYPE = config.get("CLUSTER", "DWH_NODE_TYPE")
+DWH_CLUSTER_IDENTIFIER = config.get("CLUSTER", "DWH_CLUSTER_IDENTIFIER")
+DWH_DB = config.get("DWH", "DB_NAME")
+DWH_DB_USER = config.get("DWH", "DB_USER")
+DWH_DB_PASSWORD = config.get("DWH", "DB_PASSWORD")
+DWH_PORT = config.get("DWH", "DB_PORT")
+DWH_IAM_ROLE_NAME = config.get("CLUSTER", "DWH_IAM_ROLE_NAME")
 
 ec2 = boto3.resource(
     "ec2", region_name="us-west-2", aws_access_key_id=KEY, aws_secret_access_key=SECRET

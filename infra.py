@@ -2,25 +2,27 @@ import boto3
 import json
 import configparser
 import pandas as pd
-import logger
 
-from botocore.exceptions import ClientError
+"""
+This script is what is known as IAS infrastucture as code. It basically creates a redshift cluster and database for you
+based on the dwh.cfg file. You can read more in the readme on what steps to follow.
+"""
 
 config = configparser.ConfigParser()
 config.read_file(open("dwh.cfg"))
 
-"Get variable from config file"
+"Get variables from config file"
 KEY = config.get("AWS", "KEY")
 SECRET = config.get("AWS", "SECRET")
-DWH_CLUSTER_TYPE = config.get("DWH", "DWH_CLUSTER_TYPE")
-DWH_NUM_NODES = config.get("DWH", "DWH_NUM_NODES")
-DWH_NODE_TYPE = config.get("DWH", "DWH_NODE_TYPE")
-DWH_CLUSTER_IDENTIFIER = config.get("DWH", "DWH_CLUSTER_IDENTIFIER")
-DWH_DB = config.get("CLUSTER", "DB_NAME")
-DWH_DB_USER = config.get("CLUSTER", "DB_USER")
-DWH_DB_PASSWORD = config.get("CLUSTER", "DB_PASSWORD")
-DWH_PORT = config.get("CLUSTER", "DB_PORT")
-DWH_IAM_ROLE_NAME = config.get("DWH", "DWH_IAM_ROLE_NAME")
+DWH_CLUSTER_TYPE = config.get("CLUSTER", "DWH_CLUSTER_TYPE")
+DWH_NUM_NODES = config.get("CLUSTER", "DWH_NUM_NODES")
+DWH_NODE_TYPE = config.get("CLUSTER", "DWH_NODE_TYPE")
+DWH_CLUSTER_IDENTIFIER = config.get("CLUSTER", "DWH_CLUSTER_IDENTIFIER")
+DWH_DB = config.get("DWH", "DB_NAME")
+DWH_DB_USER = config.get("DWH", "DB_USER")
+DWH_DB_PASSWORD = config.get("DWH", "DB_PASSWORD")
+DWH_PORT = config.get("DWH", "DB_PORT")
+DWH_IAM_ROLE_NAME = config.get("CLUSTER", "DWH_IAM_ROLE_NAME")
 
 ec2 = boto3.resource(
     "ec2", region_name="us-west-2", aws_access_key_id=KEY, aws_secret_access_key=SECRET
@@ -43,6 +45,11 @@ redshift = boto3.client(
 
 
 def create_iam_role(DWH_IAM_ROLE_NAME):
+    """
+    This function creaes the IAM role
+    :param DWH_IAM_ROLE_NAME: this is the name of the role you want
+    :return: prints out the created IAM role
+    """
     try:
         print("Creating a new IAM Role")
         dwhRole = iam.create_role(
@@ -85,6 +92,13 @@ def create_redshift_cluster(
     DWH_DB_PASSWORD,
     roleArn,
 ):
+    """
+    This function creates the redshift cluster based on what you have configured in your dwh.cfg file in the cluster section
+    :param DWH_CLUSTER_TYPE: e.g multi-node
+    :param DWH_NODE_TYPE: type of redshift node e.g. dc2.large
+    :param DWH_NUM_NODES: number of nodes needed
+    :return:
+    """
     try:
         print("Starting to create Redshift Cluster")
         response = redshift.create_cluster(
@@ -106,6 +120,11 @@ def create_redshift_cluster(
 
 
 def pretty_redshift_props(props):
+    """
+    This function shows your redshift cluster properties
+    :param props:
+    :return: a dataframe with the your redshift cluster properties
+    """
     keys_to_show = [
         "ClusterIdentifier",
         "NodeType",
@@ -121,6 +140,12 @@ def pretty_redshift_props(props):
 
 
 def opening_tcp_connection(vpc_id, DWH_PORT):
+    """
+    This is to open up your redshift cluster to the world or specific IP if you change the CidrIp value via the TCP connection protocol
+    :param vpc_id:
+    :param DWH_PORT:
+    :return: none
+    """
     try:
         vpc = ec2.Vpc(id=vpc_id)
         defaultSg = list(vpc.security_groups.all())[0]
